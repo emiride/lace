@@ -22,7 +22,10 @@ import { UserPromptService } from '@lib/scripts/background/services';
 import { of } from 'rxjs';
 import { CardanoTxOut } from '@src/types';
 import { getAssetsInformation, TokenInfo } from '@src/utils/get-assets-information';
+// import * as HardwareLedger from '../../../../../../node_modules/@cardano-sdk/hardware-ledger/dist/cjs';
+
 const DAPP_TOAST_DURATION = 50;
+// const DEFAULT_COMMUNICATION_TYPE = Wallet.KeyManagement.CommunicationType.Web;
 
 const dappDataApi = consumeRemoteApi<Pick<DappDataService, 'getSignTxData'>>(
   {
@@ -33,6 +36,11 @@ const dappDataApi = consumeRemoteApi<Pick<DappDataService, 'getSignTxData'>>(
   },
   { logger: console, runtime }
 );
+
+const manifest: Wallet.KeyManagement.TrezorConfig['manifest'] = {
+  appUrl: process.env.WEBSITE_URL,
+  email: process.env.EMAIL_ADDRESS
+};
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export const ConfirmTransaction = withAddressBookContext((): React.ReactElement => {
@@ -109,6 +117,21 @@ export const ConfirmTransaction = withAddressBookContext((): React.ReactElement 
 
   const signWithHardwareWallet = useCallback(async () => {
     setIsConfirmingTx(true);
+    /* if (keyAgentType === Wallet.KeyManagement.KeyAgentType.Ledger) {
+      await HardwareLedger.LedgerKeyAgent.checkDeviceConnection(DEFAULT_COMMUNICATION_TYPE);
+    } else {
+      await Wallet.KeyManagement.TrezorKeyAgent.initializeTrezorTransport({
+        manifest,
+        communicationType: DEFAULT_COMMUNICATION_TYPE
+      });
+
+      // initializeTrezorTransport would still succeed even when device is not connected
+      await Wallet.KeyManagement.TrezorKeyAgent.checkDeviceConnection();
+    }*/
+    const txBuilder = inMemoryWallet.createTxBuilder();
+    tx.body.outputs.forEach((output) => txBuilder.addOutput(output));
+    txBuilder.metadata(tx.auxiliaryData?.blob || new Map());
+    txBuilder.build();
     try {
       exposeApi<Pick<UserPromptService, 'allowSignTx'>>(
         {
@@ -125,7 +148,7 @@ export const ConfirmTransaction = withAddressBookContext((): React.ReactElement 
     } catch {
       redirectToSignFailure();
     }
-  }, [setIsConfirmingTx, redirectToSignFailure]);
+  }, [setIsConfirmingTx, redirectToSignFailure, keyAgentType]);
 
   useEffect(() => {
     dappDataApi
