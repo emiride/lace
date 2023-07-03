@@ -92,8 +92,11 @@
 }
 
 .addressBox {
-  padding-left: size_unit(2);
   min-width: 0;
+
+  @media(max-width: $breakpoint-minimum){ 
+    padding-left: size_unit(2);
+  }
 }
 
 .listItemAvatar {
