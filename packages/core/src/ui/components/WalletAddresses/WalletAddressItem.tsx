@@ -39,7 +39,7 @@ export const WalletAddressItem = ({
   className,
   isSmall = false,
   shouldUseEllipsisBeforeAndAfter,
-  isAddressWarningVisible = false
+  isAddressWarningVisible = true
 }: WalletAddressItemProps): React.ReactElement => {
   const { t } = useTranslate();
 
@@ -65,11 +65,6 @@ export const WalletAddressItem = ({
         </div>
       </div>
       <div className={cn(styles.listItemBlock, styles.addressBox)}>
-        {isAddressWarningVisible && (
-          <Tooltip title={t('package.core.addressBook.addressHandleTooltip')}>
-            <MissingIcon data-testid="address-list-item-warning" className={cn(styles.listItemWarning)} />
-          </Tooltip>
-        )}
         <Ellipsis
           dataTestId="address-list-item-address"
           text={address}
@@ -83,6 +78,11 @@ export const WalletAddressItem = ({
               }
             : { ellipsisInTheMiddle: true })}
         />
+        {isAddressWarningVisible && (
+          <Tooltip title={t('package.core.addressBook.addressHandleTooltip')}>
+            <MissingIcon data-testid="address-list-item-warning" className={cn(styles.listItemWarning)} />
+          </Tooltip>
+        )}
       </div>
     </div>
   );
