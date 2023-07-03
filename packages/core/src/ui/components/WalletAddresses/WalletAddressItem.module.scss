@@ -66,12 +66,11 @@
     }
   }
   .listItemAddress {
-    flex: 1 1 256px;
     font-size: var(--bodySmall) !important;
     font-weight: 500 !important;
     line-height: size_unit(2) !important;
     & > * {
-      width: 100%;
+      width: auto;
     }
   }
   .listItemWarning {
@@ -93,6 +92,7 @@
 }
 
 .addressBox {
+  padding-left: size_unit(2);
   min-width: 0;
 }
 
