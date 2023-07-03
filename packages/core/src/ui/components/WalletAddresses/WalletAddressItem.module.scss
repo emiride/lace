@@ -74,10 +74,13 @@
     & > * {
       width: 100%;
     }
+    @media ( max-width: $breakpoint-popup) {
+      flex: initial;
+    }
   }
   .listItemWarning {
-    width: size_unit(2.5);
-    height: size_unit(2.5);
+    min-width: size_unit(2.5);
+    min-height: size_unit(2.5);
   }
   .textField {
     color: var(--text-color-primary) !important;
