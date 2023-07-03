@@ -67,11 +67,12 @@
     }
   }
   .listItemAddress {
+    flex: 1 1 256px;
     font-size: var(--bodySmall) !important;
     font-weight: 500 !important;
     line-height: size_unit(2) !important;
     & > * {
-      width: auto;
+      width: 100%;
     }
   }
   .listItemWarning {
@@ -94,10 +95,6 @@
 
 .addressBox {
   min-width: 0;
-
-  @media(max-width: $breakpoint-minimum){ 
-    padding-left: size_unit(2);
-  }
 }
 
 .listItemAvatar {
