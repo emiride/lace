@@ -43,7 +43,8 @@
 .listItemBlock {
   align-items: center;
   display: flex;
-  gap: size_unit(3);
+  gap: size_unit(1);
+  width: auto !important;
   &.small {
     gap: size_unit(2);
 
@@ -74,6 +75,10 @@
       width: 100%;
     }
   }
+  .listItemWarning {
+    width: size_unit(2.5);
+    height: size_unit(2.5);
+  }
   .textField {
     color: var(--text-color-primary) !important;
     @extend %textTruncate;
@@ -89,7 +94,6 @@
 }
 
 .addressBox {
-  display: block;
   min-width: 0;
 }
 
