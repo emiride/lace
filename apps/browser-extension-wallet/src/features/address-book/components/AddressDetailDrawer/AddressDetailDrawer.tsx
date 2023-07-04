@@ -87,8 +87,11 @@ export const AddressDetailDrawer = ({
   const analytics = useAnalyticsContext();
 
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
     setCurrentStepConfig(stepsConfiguration[initialStep]);
-  }, [initialStep]);
+  }, [initialStep, visible]);
 
   const onArrowIconClick = () =>
     popupView && (!stepsConfiguration[currentStepConfig.prevSection] || !initialValues?.id)
@@ -146,17 +149,12 @@ export const AddressDetailDrawer = ({
             onArrowIconClick={showArrowIcon ? onArrowIconClick : undefined}
           />
         }
-        afterOpenChange={(open) => {
-          if (!open) {
-            form.resetFields();
-          }
-        }}
         footer={
           <>
             {showForm && (
               <EditAddressFormFooter
                 form={form}
-                isNewAddress={popupView && !initialValues?.id}
+                isNewAddress={currentStepConfig.currentSection === AddressDetailsSteps.CREATE}
                 onConfirmClick={onConfirmClick}
                 onCancelClick={handleOnCancelClick}
                 onClose={onCancelClick}
