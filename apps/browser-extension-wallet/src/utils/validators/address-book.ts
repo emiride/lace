@@ -69,22 +69,27 @@ export const validateWalletAddress = (address: string): string => {
 const mockConflictAnswer: HandleOwnerChangeError = {
   name: '',
   handle: 'single_handle',
-  expectedAddress: Cardano.PaymentAddress(''),
-  actualAddress: Cardano.PaymentAddress(''),
+  expectedAddress: Cardano.PaymentAddress(
+    'addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp'
+  ),
+  actualAddress: Cardano.PaymentAddress(
+    'addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp'
+  ),
   message: 'Expected address for handle has changed'
 };
 
-export const validateWalletHandle = async (
-  value: string,
-  handleResolver: HandleProvider
-): Promise<string | HandleOwnerChangeError> => {
+export const validateWalletHandle = async (value: string, handleResolver: HandleProvider): Promise<string> => {
   try {
     const res = (await verifyHandle(value, handleResolver)).handles;
     if (!res) {
       return i18n.t('general.errors.incorrectHandle');
     }
-    return mockConflictAnswer;
-    // return '';
+    console.log('value', value);
+    if (value === '$single_handle') {
+      throw mockConflictAnswer;
+    }
+
+    return '';
   } catch (error) {
     let responseError;
     if (error instanceof HandleOwnerChangeError) {
@@ -94,7 +99,7 @@ export const validateWalletHandle = async (
       console.error('An error occurred during handle validation:', error);
       responseError = i18n.t('general.errors.handleValidationFailed');
     }
-    return responseError;
+    throw responseError;
   }
 };
 

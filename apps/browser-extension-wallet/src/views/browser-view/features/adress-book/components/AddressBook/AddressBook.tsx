@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import isNumber from 'lodash/isNumber';
 import { useTranslation } from 'react-i18next';
 import { WalletAddressList, WalletAddressItemProps } from '@lace/core';
@@ -24,6 +24,8 @@ import {
   AnalyticsEventNames
 } from '@providers/AnalyticsProvider/analyticsTracker';
 import { AddressDetailsSteps } from '@src/features/address-book/components/AddressDetailDrawer/types';
+import { validateWalletHandle } from '@src/utils/validators';
+import { useHandleResolver } from '@hooks';
 
 const ELLIPSIS_LEFT_SIDE_LENGTH = 34;
 const ELLIPSIS_RIGHT_SIDE_LENGTH = 34;
@@ -35,6 +37,8 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
   const { extendLimit, saveRecord: saveAddress, updateRecord: updateAddress, deleteRecord: deleteAddress } = utils;
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const analytics = useAnalyticsContext();
+  const handleResolver = useHandleResolver();
+  const [validatedAddressStatus, setValidatedAddressStatus] = useState<Record<string, boolean>>({});
 
   const addressListTranslations = {
     name: translate('core.walletAddressList.name'),
@@ -76,12 +80,30 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
           setIsDrawerOpen(true);
         },
         shouldUseEllipsisBeferoAfter: true,
-        isAddressWarningVisible: true,
+        isAddressWarningVisible: validatedAddressStatus[item.address] === false ?? false,
         beforeEllipsis: ELLIPSIS_LEFT_SIDE_LENGTH,
         afterEllipsis: ELLIPSIS_RIGHT_SIDE_LENGTH
       })) || [],
-    [addressList, analytics, setAddressToEdit]
+    [addressList, analytics, setAddressToEdit, validatedAddressStatus]
   );
+
+  useEffect(() => {
+    const updateAddressStatus = (address: string, status: boolean) => {
+      setValidatedAddressStatus((currentValidatedAddressStatus) => ({
+        ...currentValidatedAddressStatus,
+        [address]: status
+      }));
+    };
+    const validateAddresses = () => {
+      addressList?.map(async (item: AddressBookSchema) => {
+        validateWalletHandle(item.address, handleResolver)
+          .then(() => updateAddressStatus(item.address, true))
+          .catch(() => updateAddressStatus(item.address, false));
+      });
+    };
+
+    validateAddresses();
+  }, [addressList, handleResolver]);
 
   const loadMoreData = useCallback(() => {
     extendLimit();

@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WalletAddressList, WalletAddressItemProps } from '@lace/core';
 import { Button } from '@lace/common';
@@ -21,8 +21,7 @@ import {
 import { useAnalyticsContext } from '@providers';
 import { AddressDetailsSteps } from './AddressDetailDrawer/types';
 import { useHandleResolver } from '@hooks';
-import { validateWalletName, validateWalletAddress, validateWalletHandle } from '@src/utils/validators/address-book';
-import { HandleProvider } from '@cardano-sdk/core';
+import { validateWalletHandle } from '@src/utils/validators';
 
 const scrollableTargetId = 'popupAddressBookContainerId';
 
@@ -32,6 +31,7 @@ export const AddressBook = withAddressBookContext(() => {
   const { setIsEditAddressVisible, isEditAddressVisible, setAddressToEdit, addressToEdit } = useAddressBookStore();
   const { t: translate } = useTranslation();
   const analytics = useAnalyticsContext();
+  const [validatedAddressStatus, setValidatedAddressStatus] = useState<Record<string, boolean>>({});
 
   const addressListTranslations = {
     name: translate('core.walletAddressList.name'),
@@ -58,32 +58,9 @@ export const AddressBook = withAddressBookContext(() => {
         });
   };
 
-  // continue here
-  // const list: WalletAddressItemProps[] = useMemo(() => {
-  //   addressList?.map((item: AddressBookSchema) => ({
-  //     id: item.id,
-  //     address: item.address,
-  //     name: item.name,
-  //     onClick: (address: AddressBookSchema) => {
-  //       analytics.sendEvent({
-  //         category: AnalyticsEventCategories.ADDRESS_BOOK,
-  //         action: AnalyticsEventActions.CLICK_EVENT,
-  //         name: AnalyticsEventNames.AddressBook.VIEW_ADDRESS_DETAILS_POPUP
-  //       });
-  //       setAddressToEdit(address);
-  //       setIsEditAddressVisible(true);
-  //     },
-  //     isSmall: true,
-  //     isAddressWarningVisible: getAddressValidatedWithCallback(item.address) && true
-  //   })) || [];
-  // }, [addressList, analytics, setAddressToEdit, setIsEditAddressVisible]);
-
-  const list: WalletAddressItemProps[] = useMemo(() => {
-    const getAddressValidated = async (address: string): Promise<boolean> =>
-      (await validateWalletHandle(address, handleResolver)) === '';
-
-    return (
-      addressList?.map(async (item: AddressBookSchema) => ({
+  const list: WalletAddressItemProps[] = useMemo(
+    () =>
+      addressList?.map((item: AddressBookSchema) => ({
         id: item.id,
         address: item.address,
         name: item.name,
@@ -97,10 +74,28 @@ export const AddressBook = withAddressBookContext(() => {
           setIsEditAddressVisible(true);
         },
         isSmall: true,
-        isAddressWarningVisible: await getAddressValidated(item.address)
-      })) || []
-    );
-  }, [addressList, handleResolver, analytics, setAddressToEdit, setIsEditAddressVisible]);
+        isAddressWarningVisible: validatedAddressStatus[item.address] === false ?? false
+      })) || [],
+    [addressList, analytics, setAddressToEdit, setIsEditAddressVisible, validatedAddressStatus]
+  );
+
+  useEffect(() => {
+    const updateAddressStatus = (address: string, status: boolean) => {
+      setValidatedAddressStatus((currentValidatedAddressStatus) => ({
+        ...currentValidatedAddressStatus,
+        [address]: status
+      }));
+    };
+    const validateAddresses = () => {
+      addressList?.map(async (item: AddressBookSchema) => {
+        validateWalletHandle(item.address, handleResolver)
+          .then(() => updateAddressStatus(item.address, true))
+          .catch(() => updateAddressStatus(item.address, false));
+      });
+    };
+
+    validateAddresses();
+  }, [addressList, handleResolver]);
 
   const loadMoreData = useCallback(() => {
     extendLimit();
