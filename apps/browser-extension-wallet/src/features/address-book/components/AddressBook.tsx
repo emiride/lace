@@ -20,6 +20,9 @@ import {
 } from '@providers/AnalyticsProvider/analyticsTracker';
 import { useAnalyticsContext } from '@providers';
 import { AddressDetailsSteps } from './AddressDetailDrawer/types';
+import { useHandleResolver } from '@hooks';
+import { validateWalletName, validateWalletAddress, validateWalletHandle } from '@src/utils/validators/address-book';
+import { HandleProvider } from '@cardano-sdk/core';
 
 const scrollableTargetId = 'popupAddressBookContainerId';
 
@@ -34,6 +37,8 @@ export const AddressBook = withAddressBookContext(() => {
     name: translate('core.walletAddressList.name'),
     address: translate('core.walletAddressList.address')
   };
+
+  const handleResolver = useHandleResolver();
 
   const onAddressSave = (address: AddressBookSchema | Omit<AddressBookSchema, 'id'>): Promise<string> => {
     analytics.sendEvent({
@@ -53,9 +58,32 @@ export const AddressBook = withAddressBookContext(() => {
         });
   };
 
-  const list: WalletAddressItemProps[] = useMemo(
-    () =>
-      addressList?.map((item: AddressBookSchema) => ({
+  // continue here
+  // const list: WalletAddressItemProps[] = useMemo(() => {
+  //   addressList?.map((item: AddressBookSchema) => ({
+  //     id: item.id,
+  //     address: item.address,
+  //     name: item.name,
+  //     onClick: (address: AddressBookSchema) => {
+  //       analytics.sendEvent({
+  //         category: AnalyticsEventCategories.ADDRESS_BOOK,
+  //         action: AnalyticsEventActions.CLICK_EVENT,
+  //         name: AnalyticsEventNames.AddressBook.VIEW_ADDRESS_DETAILS_POPUP
+  //       });
+  //       setAddressToEdit(address);
+  //       setIsEditAddressVisible(true);
+  //     },
+  //     isSmall: true,
+  //     isAddressWarningVisible: getAddressValidatedWithCallback(item.address) && true
+  //   })) || [];
+  // }, [addressList, analytics, setAddressToEdit, setIsEditAddressVisible]);
+
+  const list: WalletAddressItemProps[] = useMemo(() => {
+    const getAddressValidated = async (address: string): Promise<boolean> =>
+      (await validateWalletHandle(address, handleResolver)) === '';
+
+    return (
+      addressList?.map(async (item: AddressBookSchema) => ({
         id: item.id,
         address: item.address,
         name: item.name,
@@ -68,10 +96,11 @@ export const AddressBook = withAddressBookContext(() => {
           setAddressToEdit(address);
           setIsEditAddressVisible(true);
         },
-        isSmall: true
-      })) || [],
-    [addressList, analytics, setAddressToEdit, setIsEditAddressVisible]
-  );
+        isSmall: true,
+        isAddressWarningVisible: await getAddressValidated(item.address)
+      })) || []
+    );
+  }, [addressList, handleResolver, analytics, setAddressToEdit, setIsEditAddressVisible]);
 
   const loadMoreData = useCallback(() => {
     extendLimit();

@@ -76,6 +76,7 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
           setIsDrawerOpen(true);
         },
         shouldUseEllipsisBeferoAfter: true,
+        isAddressWarningVisible: true,
         beforeEllipsis: ELLIPSIS_LEFT_SIDE_LENGTH,
         afterEllipsis: ELLIPSIS_RIGHT_SIDE_LENGTH
       })) || [],

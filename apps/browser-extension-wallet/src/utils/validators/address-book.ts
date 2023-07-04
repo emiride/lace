@@ -7,7 +7,7 @@ import { ToastProps } from '@lace/common';
 import { addressErrorMessage, nameErrorMessage } from '@lib/storage/helpers';
 import { TOAST_DEFAULT_DURATION } from '@hooks/useActionExecution';
 import ErrorIcon from '@assets/icons/address-error-icon.component.svg';
-import { HandleProvider, HandleResolution } from '@cardano-sdk/core';
+import { HandleProvider, HandleResolution, HandleOwnerChangeError, Cardano } from '@cardano-sdk/core';
 
 const MAX_ADDRESS_BOOK_NAME_LENGTH = 20;
 
@@ -59,12 +59,43 @@ export const validateWalletAddress = (address: string): string => {
   return !isValid ? i18n.t('browserView.addressBook.form.incorrectCardanoAddress') : '';
 };
 
-export const validateWalletHandle = async (value: string, handleResolver: HandleProvider): Promise<string> => {
-  const res = (await verifyHandle(value, handleResolver)).handles;
-  if (!res) {
-    return i18n.t('general.errors.incorrectHandle');
+/**
+ *
+ * @param value
+ * @param handleResolver
+ * @returns
+ */
+
+const mockConflictAnswer: HandleOwnerChangeError = {
+  name: '',
+  handle: 'single_handle',
+  expectedAddress: Cardano.PaymentAddress(''),
+  actualAddress: Cardano.PaymentAddress(''),
+  message: 'Expected address for handle has changed'
+};
+
+export const validateWalletHandle = async (
+  value: string,
+  handleResolver: HandleProvider
+): Promise<string | HandleOwnerChangeError> => {
+  try {
+    const res = (await verifyHandle(value, handleResolver)).handles;
+    if (!res) {
+      return i18n.t('general.errors.incorrectHandle');
+    }
+    return mockConflictAnswer;
+    // return '';
+  } catch (error) {
+    let responseError;
+    if (error instanceof HandleOwnerChangeError) {
+      console.error(error.message);
+      responseError = error;
+    } else {
+      console.error('An error occurred during handle validation:', error);
+      responseError = i18n.t('general.errors.handleValidationFailed');
+    }
+    return responseError;
   }
-  return '';
 };
 
 // popup view specific validations

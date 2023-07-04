@@ -82,6 +82,8 @@ export const AddressDetailDrawer = ({
     [handleResolver]
   );
 
+  console.log('VALIDATION ON HANDLE:', validations);
+
   const analytics = useAnalyticsContext();
 
   useEffect(() => {
