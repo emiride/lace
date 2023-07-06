@@ -24,10 +24,11 @@ export const verifyHandle = async (
 ): Promise<ValidationResult & { handles?: HandleResolution[] }> => {
   try {
     const resolvedHandles = await handleResolver.resolveHandles({ handles: [value.slice(1)] });
-
+    console.log('>>>>>>>>>> 0.whats going on?');
     if (resolvedHandles.length === 0) {
       return { valid: false };
     }
+    console.log('>>>>>2.', resolvedHandles);
     return { valid: true, handles: resolvedHandles };
   } catch (error) {
     return {
@@ -80,10 +81,7 @@ export const validateWalletAddress = (address: string): string => {
  * @param handleResolver
  * @returns
  */
-export const validateWalletHandle = async (
-  value: string,
-  handleResolver: HandleProvider
-): Promise<HandleResolution[]> => {
+export const validateWalletHandle = async (value: string, handleResolver: HandleProvider): Promise<string> => {
   try {
     const res = (await verifyHandle(value, handleResolver)).handles;
     if (!res) {
@@ -94,10 +92,10 @@ export const validateWalletHandle = async (
     //   throw mockConflictAnswer;
     // }
     console.log('RESPONSE:', res);
-    return res;
+    return '';
   } catch (error) {
     let responseError;
-    console.log('WHATS HERE::::', error);
+    console.log('ERROR::::', error);
     if (error instanceof HandleOwnerChangeError) {
       console.error(error.message);
       responseError = error;
