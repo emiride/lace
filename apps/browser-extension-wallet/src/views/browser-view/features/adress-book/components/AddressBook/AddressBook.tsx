@@ -7,7 +7,10 @@ import { withAddressBookContext, useAddressBookContext } from '@src/features/add
 import { AddressBookSchema } from '@src/lib/storage';
 import { useAddressBookStore } from '@src/features/address-book/store';
 import { SectionLayout, EducationalList, Layout } from '@src/views/browser-view/components';
-import { AddressDetailDrawer } from '@src/features/address-book/components/AddressDetailDrawer';
+import {
+  AddressDetailDrawer,
+  AddressChangeDetailDrawer
+} from '@src/features/address-book/components/AddressDetailDrawer';
 import { AddressBookEmpty } from '../AddressBookEmpty';
 import styles from './AddressBook.module.scss';
 import DeleteIcon from '@assets/icons/delete-icon.component.svg';
@@ -26,6 +29,7 @@ import {
 import { AddressDetailsSteps } from '@src/features/address-book/components/AddressDetailDrawer/types';
 import { validateWalletHandle } from '@src/utils/validators';
 import { useHandleResolver } from '@hooks';
+import { HandleOwnerChangeError } from '@cardano-sdk/core';
 
 const ELLIPSIS_LEFT_SIDE_LENGTH = 34;
 const ELLIPSIS_RIGHT_SIDE_LENGTH = 34;
@@ -36,9 +40,12 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
   const { list: addressList, count: addressCount, utils } = useAddressBookContext();
   const { extendLimit, saveRecord: saveAddress, updateRecord: updateAddress, deleteRecord: deleteAddress } = utils;
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [isAddressDrawerOpen, setIsAddressDrawerOpen] = useState<boolean>(false);
   const analytics = useAnalyticsContext();
   const handleResolver = useHandleResolver();
-  const [validatedAddressStatus, setValidatedAddressStatus] = useState<Record<string, boolean>>({});
+  const [validatedAddressStatus, setValidatedAddressStatus] = useState<
+    Record<string, { isValid: boolean; error?: HandleOwnerChangeError }>
+  >({});
 
   const addressListTranslations = {
     name: translate('core.walletAddressList.name'),
@@ -77,10 +84,14 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
             name: AnalyticsEventNames.AddressBook.VIEW_ADDRESS_DETAILS_BROWSER
           });
           setAddressToEdit(address);
-          setIsDrawerOpen(true);
+          if (validatedAddressStatus[address.address]?.isValid === false) {
+            setIsAddressDrawerOpen(true);
+          } else {
+            setIsDrawerOpen(true);
+          }
         },
         shouldUseEllipsisBeferoAfter: true,
-        isAddressWarningVisible: validatedAddressStatus[item.address] === false ?? false,
+        isAddressWarningVisible: validatedAddressStatus[item.address]?.isValid === false ?? false,
         beforeEllipsis: ELLIPSIS_LEFT_SIDE_LENGTH,
         afterEllipsis: ELLIPSIS_RIGHT_SIDE_LENGTH
       })) || [],
@@ -88,7 +99,7 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
   );
 
   useEffect(() => {
-    const updateAddressStatus = (address: string, status: boolean) => {
+    const updateAddressStatus = (address: string, status: { isValid: boolean; error?: HandleOwnerChangeError }) => {
       setValidatedAddressStatus((currentValidatedAddressStatus) => ({
         ...currentValidatedAddressStatus,
         [address]: status
@@ -97,8 +108,8 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
     const validateAddresses = () => {
       addressList?.map(async (item: AddressBookSchema) => {
         validateWalletHandle(item.address, handleResolver)
-          .then(() => updateAddressStatus(item.address, true))
-          .catch(() => updateAddressStatus(item.address, false));
+          .then(() => updateAddressStatus(item.address, { isValid: true }))
+          .catch((error) => updateAddressStatus(item.address, { isValid: false, error }));
       });
     };
 
@@ -169,6 +180,22 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
         ) : (
           <AddressBookEmpty />
         )}
+        <AddressChangeDetailDrawer
+          visible={isAddressDrawerOpen}
+          onCancelClick={() => {
+            setIsAddressDrawerOpen(false);
+          }}
+          initialValues={addressToEdit}
+          expectedAddress={validatedAddressStatus[addressToEdit.address]?.error?.expectedAddress}
+          actualAddress={validatedAddressStatus[addressToEdit.address]?.error?.actualAddress}
+          onDelete={(id) =>
+            deleteAddress(id, {
+              text: translate('browserView.addressBook.toast.deleteAddress'),
+              icon: DeleteIcon
+            })
+          }
+          onConfirmClick={onAddressSave}
+        />
         <AddressDetailDrawer
           initialValues={addressToEdit}
           onCancelClick={() => {
@@ -176,6 +203,7 @@ export const AddressBook = withAddressBookContext((): React.ReactElement => {
             setIsDrawerOpen(false);
           }}
           onConfirmClick={onAddressSave}
+          // eslint-disable-next-line sonarjs/no-identical-functions
           onDelete={(id) =>
             deleteAddress(id, {
               text: translate('browserView.addressBook.toast.deleteAddress'),

@@ -7,7 +7,12 @@ import { ToastProps } from '@lace/common';
 import { addressErrorMessage, nameErrorMessage } from '@lib/storage/helpers';
 import { TOAST_DEFAULT_DURATION } from '@hooks/useActionExecution';
 import ErrorIcon from '@assets/icons/address-error-icon.component.svg';
-import { HandleProvider, HandleResolution, HandleOwnerChangeError, Cardano } from '@cardano-sdk/core';
+import {
+  HandleProvider,
+  HandleResolution,
+  HandleOwnerChangeError
+  // Cardano
+} from '@cardano-sdk/core';
 
 const MAX_ADDRESS_BOOK_NAME_LENGTH = 20;
 
@@ -59,39 +64,40 @@ export const validateWalletAddress = (address: string): string => {
   return !isValid ? i18n.t('browserView.addressBook.form.incorrectCardanoAddress') : '';
 };
 
+// const mockConflictAnswer = new HandleOwnerChangeError(
+//   'single_handle',
+//   Cardano.PaymentAddress(
+//     'addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp'
+//   ),
+//   Cardano.PaymentAddress(
+//     'addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp'
+//   )
+// );
+
 /**
  *
  * @param value
  * @param handleResolver
  * @returns
  */
-
-const mockConflictAnswer: HandleOwnerChangeError = {
-  name: '',
-  handle: 'single_handle',
-  expectedAddress: Cardano.PaymentAddress(
-    'addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp'
-  ),
-  actualAddress: Cardano.PaymentAddress(
-    'addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp'
-  ),
-  message: 'Expected address for handle has changed'
-};
-
-export const validateWalletHandle = async (value: string, handleResolver: HandleProvider): Promise<string> => {
+export const validateWalletHandle = async (
+  value: string,
+  handleResolver: HandleProvider
+): Promise<HandleResolution[]> => {
   try {
     const res = (await verifyHandle(value, handleResolver)).handles;
     if (!res) {
       return i18n.t('general.errors.incorrectHandle');
     }
-    console.log('value', value);
-    if (value === '$single_handle') {
-      throw mockConflictAnswer;
-    }
-
-    return '';
+    // console.log('value', value);
+    // if (value === '$single_handle') {
+    //   throw mockConflictAnswer;
+    // }
+    console.log('RESPONSE:', res);
+    return res;
   } catch (error) {
     let responseError;
+    console.log('WHATS HERE::::', error);
     if (error instanceof HandleOwnerChangeError) {
       console.error(error.message);
       responseError = error;
