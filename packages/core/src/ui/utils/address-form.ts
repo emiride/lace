@@ -10,7 +10,8 @@ export type valuesPropType = {
 
 export const nameKey = 'name';
 export const addressKey = 'address';
-export const keys = [nameKey, addressKey];
+export const handleKey = 'handle';
+export const keys = [nameKey, addressKey, handleKey];
 
 export type ValidatorFn = (_rule: Rule, value: string) => Promise<void>;
 

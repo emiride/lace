@@ -4,11 +4,13 @@ import { Wallet } from '@lace/cardano';
 import { DbQueries } from '../hooks';
 import { AddressRecordParams } from '@src/features/address-book/context';
 import { sortTabletByName } from '../helpers';
+import { Cardano, HandleResolution } from '@cardano-sdk/core';
 
 export interface AddressBookSchema {
   id: number;
   name: string;
-  address: string;
+  address: string | Cardano.PaymentAddress;
+  handleResolution?: HandleResolution;
   network: Wallet.Cardano.NetworkMagics;
 }
 
@@ -19,6 +21,11 @@ export const addressBookSchema: VersionedSchema = {
     2: ['++id', 'name', 'address', 'network']
   }
 };
+
+export const isAddressAHandle = (value: Cardano.PaymentAddress | string): value is string => value.startsWith('$');
+
+export const isAddressAPaymentAddress = (value: Cardano.PaymentAddress | string): value is Cardano.PaymentAddress =>
+  !value.startsWith('$');
 
 export const addressBookQueries = (
   currentChain: Wallet.Cardano.NetworkMagics

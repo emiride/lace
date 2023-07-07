@@ -81,17 +81,16 @@ export const validateWalletAddress = (address: string): string => {
  * @param handleResolver
  * @returns
  */
-export const validateWalletHandle = async (value: string, handleResolver: HandleProvider): Promise<string> => {
+export const validateWalletHandle = async (
+  value: string,
+  address: Cardano.PaymentAddress | undefined,
+  handleResolver: HandleProvider
+): Promise<string> => {
   try {
     const res = (await verifyHandle(value, handleResolver)).handles;
     if (!res) {
       return i18n.t('general.errors.incorrectHandle');
     }
-    // console.log('value', value);
-    // if (value === '$single_handle') {
-    //   throw mockConflictAnswer;
-    // }
-    console.log('RESPONSE:', res);
     return '';
   } catch (error) {
     let responseError;

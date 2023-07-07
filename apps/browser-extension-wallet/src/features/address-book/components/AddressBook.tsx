@@ -89,7 +89,6 @@ export const AddressBook = withAddressBookContext(() => {
   );
 
   useEffect(() => {
-    console.log('>>>>>1.');
     const updateAddressStatus = (address: string, status: { isValid: boolean; error?: HandleOwnerChangeError }) => {
       setValidatedAddressStatus((currentValidatedAddressStatus) => ({
         ...currentValidatedAddressStatus,
@@ -98,7 +97,7 @@ export const AddressBook = withAddressBookContext(() => {
     };
     const validateAddresses = () => {
       addressList?.map(async (item: AddressBookSchema) => {
-        validateWalletHandle(item.address, handleResolver)
+        validateWalletHandle(item.address, item.handleResolution.cardanoAddress, handleResolver)
           .then(() => updateAddressStatus(item.address, { isValid: true }))
           .catch((error) => updateAddressStatus(item.address, { isValid: false, error }));
       });
@@ -114,7 +113,7 @@ export const AddressBook = withAddressBookContext(() => {
   const addressDrawerInitialStep = (addressToEdit as AddressBookSchema)?.id
     ? AddressDetailsSteps.DETAILS
     : AddressDetailsSteps.CREATE;
-  console.log('WHAT NAME:', addressToEdit.name);
+
   return (
     <>
       <ContentLayout
