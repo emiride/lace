@@ -7,12 +7,7 @@ import { ToastProps } from '@lace/common';
 import { addressErrorMessage, nameErrorMessage } from '@lib/storage/helpers';
 import { TOAST_DEFAULT_DURATION } from '@hooks/useActionExecution';
 import ErrorIcon from '@assets/icons/address-error-icon.component.svg';
-import {
-  HandleProvider,
-  HandleResolution,
-  HandleOwnerChangeError
-  // Cardano
-} from '@cardano-sdk/core';
+import { HandleProvider, HandleResolution, HandleOwnerChangeError, Cardano } from '@cardano-sdk/core';
 
 const MAX_ADDRESS_BOOK_NAME_LENGTH = 20;
 
@@ -24,11 +19,9 @@ export const verifyHandle = async (
 ): Promise<ValidationResult & { handles?: HandleResolution[] }> => {
   try {
     const resolvedHandles = await handleResolver.resolveHandles({ handles: [value.slice(1)] });
-    console.log('>>>>>>>>>> 0.whats going on?');
     if (resolvedHandles.length === 0) {
       return { valid: false };
     }
-    console.log('>>>>>2.', resolvedHandles);
     return { valid: true, handles: resolvedHandles };
   } catch (error) {
     return {
