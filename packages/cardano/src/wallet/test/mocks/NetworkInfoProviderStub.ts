@@ -2,7 +2,8 @@
 /* eslint-disable max-len */
 import { Cardano, NetworkInfoProvider, Seconds, EraSummary } from '@cardano-sdk/core';
 import { testnetEraSummaries } from '@cardano-sdk/util-dev';
-import { ProtocolParameters } from '@cardano-sdk/core/dist/cjs/Cardano';
+
+type ProtocolParameters = Cardano.ProtocolParameters;
 
 export const mockedNetworkInfo: {
   network: {

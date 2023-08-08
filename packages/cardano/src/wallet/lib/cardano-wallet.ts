@@ -18,8 +18,8 @@ import {
   storage,
   SetupWalletProps,
   restoreKeyAgent
-} from '../../../../../node_modules/@cardano-sdk/wallet/dist/cjs';
-import * as KeyManagement from '../../../../../node_modules/@cardano-sdk/key-management/dist/cjs';
+} from '@cardano-sdk/wallet';
+import * as KeyManagement from '@cardano-sdk/key-management';
 import { WalletManagerActivateProps, WalletManagerUi } from '@cardano-sdk/web-extension';
 import { ChainName, WalletManagerProviderTypes } from '../types';
 import * as Crypto from '@cardano-sdk/crypto';

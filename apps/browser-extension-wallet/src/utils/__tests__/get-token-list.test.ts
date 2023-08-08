@@ -5,8 +5,10 @@ import { GetTokenListParams, getTokenList } from '../get-token-list';
 import { mockAsset, mockNft } from '../mocks/test-helpers';
 import { defaultCurrency } from '@providers/currency/constants';
 import { Wallet } from '@lace/cardano';
-import { NftMetadata } from '@cardano-sdk/core/dist/cjs/Asset';
+import { Asset } from '@cardano-sdk/core';
 import { PriceResult } from '@hooks';
+
+type NftMetadata = Asset.NftMetadata;
 
 const testEnvironment = 'Preprod';
 

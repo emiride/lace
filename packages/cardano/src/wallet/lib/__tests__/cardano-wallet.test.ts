@@ -5,7 +5,7 @@ import {
   validateWalletPassword
 } from '@wallet/lib/cardano-wallet';
 import { testKeyAgent } from '@wallet/test/mocks/TestKeyAgent';
-import * as KeyManagement from '../../../../../../node_modules/@cardano-sdk/key-management/dist/cjs';
+import * as KeyManagement from '@cardano-sdk/key-management';
 import { firstValueFrom } from 'rxjs';
 import omit from 'lodash/omit';
 import { mockObservableWallet } from '@src/wallet/test/mocks';

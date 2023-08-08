@@ -1,12 +1,12 @@
 /* eslint-disable unicorn/no-null */
 import { Cardano, CML } from '@cardano-sdk/core';
 import { ObservableWallet, setupWallet, SetupWalletProps } from '@cardano-sdk/wallet';
-import * as KeyManagement from '../../../../../node_modules/@cardano-sdk/key-management/dist/cjs';
+import * as KeyManagement from '@cardano-sdk/key-management';
 import { ChainName, DeviceConnection, CreateHardwareWalletArgs, HardwareWallets } from '../types';
 import { activateWallet, CardanoWalletByChain, KeyAgentsByChain } from './cardano-wallet';
 import { WalletManagerUi } from '@cardano-sdk/web-extension';
 import * as Crypto from '@cardano-sdk/crypto';
-import * as HardwareLedger from '../../../../../node_modules/@cardano-sdk/hardware-ledger/dist/cjs';
+import * as HardwareLedger from '@cardano-sdk/hardware-ledger';
 
 const isTrezorHWSupported = (): boolean => process.env.USE_TREZOR_HW === 'true';
 

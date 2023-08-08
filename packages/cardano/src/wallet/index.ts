@@ -1,3 +1,5 @@
+import { Cardano } from '@cardano-sdk/core';
+
 export {
   Asset,
   AssetProvider,
@@ -19,8 +21,7 @@ export {
 } from '@cardano-sdk/core';
 
 export { testnetEraSummaries } from '@cardano-sdk/util-dev';
-
-export { ProtocolParameters } from '../../../../node_modules/@cardano-sdk/core/dist/cjs/Cardano';
+export type ProtocolParameters = Cardano.ProtocolParameters;
 
 export {
   BalanceTracker as Balance,
@@ -33,7 +34,7 @@ export {
   createWalletUtil,
   Assets,
   TxInFlight
-} from '../../../../node_modules/@cardano-sdk/wallet/dist/cjs';
+} from '@cardano-sdk/wallet';
 
 export {
   InitializeTxProps,
@@ -43,7 +44,7 @@ export {
   UnsignedTx
 } from '@cardano-sdk/tx-construction';
 
-export * as KeyManagement from '../../../../node_modules/@cardano-sdk/key-management/dist/cjs';
+export * as KeyManagement from '@cardano-sdk/key-management';
 
 export { HexBlob, Percent } from '@cardano-sdk/util';
 export * as Crypto from '@cardano-sdk/crypto';
