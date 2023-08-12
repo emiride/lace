@@ -128,7 +128,7 @@ export const launchCip30Popup = async (url: string): Promise<Tabs.Tab> => {
   const newWindow = await createWindow(
     tab.id,
     calculatePopupWindowPositionAndSize(currentWindow, POPUP_WINDOW),
-    'popup',
+    'normal',
     true
   );
   newWindow.alwaysOnTop = true;
