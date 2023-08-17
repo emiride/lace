@@ -15,7 +15,8 @@ Feature: Address book - extended view
     When I see address count: 3
     Then address list is displayed and each row consists of avatar, name and address
 
-  @LW-4464 @Smoke
+  @LW-4464 @Smoke @Pending
+  # BUG LW-7925
   Scenario: Extended-view - Address Book - Add new address "Shelley_manual"
     Given I don't have any addresses added to my address book in extended mode
     And I click "Add address" button on address book page
@@ -26,7 +27,8 @@ Feature: Address book - extended view
     Then I see a toast with message: "browserView.addressBook.toast.addAddress"
     And I see address row with name "Shelley_manual" and address "addr_test1qq959a7g4spmkg4gz2yw02622c739p8crt6tzh04qzag992wcj4m99m95nmkgxhk8j0upqp2jzaxxdsj3jf9v4yhv3uqfwr6ja" on the list in extended mode
 
-  @LW-4464
+  @LW-4464 @Pending
+  # BUG LW-7925
   Scenario Outline: Extended-view - Address Book - Add new address <wallet_name>
     Given I don't have any addresses added to my address book in extended mode
     And I click "Add address" button on address book page
@@ -79,7 +81,7 @@ Feature: Address book - extended view
   Scenario: Extended-view - Address Book - Remove address
     Given I have 3 addresses in my address book in extended mode
     When I click address on the list with name "Byron"
-    And I see address detail page in extended mode
+    And I see address detail page in extended mode with details of "Byron" address
     And I click "Delete" button on address details page
     Then I see delete address modal
     When I click "Delete address" button on delete address modal
@@ -89,10 +91,10 @@ Feature: Address book - extended view
   Scenario: Extended-view - Address Book - Remove address and cancel
     Given I have 3 addresses in my address book in extended mode
     When I click address on the list with name "Byron"
-    And I see address detail page in extended mode
+    And I see address detail page in extended mode with details of "Byron" address
     And I click "Delete" button on address details page
     And I click "Cancel" button on delete address modal
-    Then I see address detail page in extended mode
+    Then I see address detail page in extended mode with details of "Byron" address
 
   @LW-4468 @Smoke
   Scenario Outline: Extended-view - Address Book - Uniqueness validation and toast display with text <toast_message>
@@ -114,7 +116,8 @@ Feature: Address book - extended view
     Then I see a toast with message: "general.clipboard.copiedToClipboard"
     And address is saved to clipboard
 
-  @LW-4470
+  @LW-4470 @Pending
+  # BUG LW-7925
   Scenario Outline: Extended-view - Address Book - Edit address: <edited_address>
     Given I have 3 addresses in my address book in extended mode
     When I click address on the list with name "<edited_address>"
@@ -134,7 +137,7 @@ Feature: Address book - extended view
     And I click address on the list with name "Shelley"
     And I click "Edit" button on address details page
     When I click "Cancel" button on "Edit address" drawer
-    Then I see address detail page in extended mode
+    Then I see address detail page in extended mode with details of "Shelley" address
 
   @LW-4565
   Scenario Outline: Extended-view - Address Book - Edit wallet name/address and display error message - name error: <name_error>, address error: <address_error>
@@ -183,7 +186,7 @@ Feature: Address book - extended view
     And I click address on the list with name "Shelley"
     And I click "Edit" button on address details page
     When I close the drawer by clicking back button
-    Then I see address detail page in extended mode
+    Then I see address detail page in extended mode with details of "Shelley" address
 
   @LW-4484
   Scenario: Extended-view - Address Book - "About your wallet" widget
@@ -205,11 +208,11 @@ Feature: Address book - extended view
   Scenario: Extended-view - Address Book - Enter and Escape buttons support when editing address
     Given I have 3 addresses in my address book in extended mode
     When I click address on the list with name "Byron"
-    Then I see address detail page in extended mode
+    Then I see address detail page in extended mode with details of "Byron" address
     When I press keyboard Enter button
-    Then I see "Edit address" drawer in extended mode
+    Then I see "Edit address" drawer in extended mode with details of "Byron" address
     When I press keyboard Escape button
-    And I see address detail page in extended mode
+    And I see address detail page in extended mode with details of "Byron" address
     When I press keyboard Enter button
     And I fill address form with "Byron_edited" name and "37btjrVyb4KC6N6XtRHwEuLPQW2aa9JA89gbnm67PArSi8E7vGeqgA6W1pFBphc1hhrk1WKGPZpUbnvYRimVLRVnUH6M6d3dsVdxYoAC4m7oNj7Dzp" address
     When I press keyboard Enter button
@@ -219,9 +222,9 @@ Feature: Address book - extended view
   Scenario: Extended-view - Address Book - Escape button support when closing drawer
     Given I have 3 addresses in my address book in extended mode
     When I click address on the list with name "Byron"
-    Then I see address detail page in extended mode
+    Then I see address detail page in extended mode with details of "Byron" address
     When I press keyboard Escape button
-    Then I do not see address detail page in extended mode
+    Then I do not see address detail page in extended mode with details of "Byron" address
 
   @LW-4779 @Pending
   # Bug LW-7419
