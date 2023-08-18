@@ -23,8 +23,14 @@ module.exports = () => ({
   module: {
     rules: [
       {
-        test: /\.(js|jsx|ts|tsx)$/,
-        exclude: /node_modules\/(?!(@cardano-sdk)\/).*/,
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false
+        }
+      },
+      {
+        test: /\.(jsx|ts|tsx)$/,
+        exclude: /node_modules/,
         loader: 'swc-loader',
         options: {
           jsc: {
