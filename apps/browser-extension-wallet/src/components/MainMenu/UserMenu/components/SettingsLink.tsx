@@ -9,10 +9,8 @@ export const SettingsLink = (): React.ReactElement => {
   const { t } = useTranslation();
 
   return (
-    <Link to={walletRoutePaths.settings}>
-      <Menu.Item data-testid="header-menu-settings" className={styles.menuItem}>
-        <a>{t('browserView.topNavigationBar.links.settings')}</a>
-      </Menu.Item>
-    </Link>
+    <Menu.Item data-testid="header-menu-settings" className={styles.menuItem}>
+      <Link to={walletRoutePaths.settings}>{t('browserView.topNavigationBar.links.settings')}</Link>
+    </Menu.Item>
   );
 };
