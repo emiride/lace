@@ -73,14 +73,6 @@ type KeysStructure = {
         retiring: '';
         saturated: '';
       };
-      switchingPoolBanner: {
-        title: '';
-        description: {
-          step1: '';
-          step2: '';
-          step3: '';
-        };
-      };
       stakeOnPoolButton: '';
       selectForMultiStaking: '';
       addStakingPool: '';
@@ -176,6 +168,20 @@ type KeysStructure = {
     yourPoolsSection: {
       heading: '';
       manageButtonLabel: '';
+    };
+    noFunds: {
+      title: '';
+      description: '';
+      button: '';
+    };
+    noStaking: {
+      title: '';
+      description: '';
+      balanceTitle: '';
+      getStarted: '';
+      followSteps: '';
+      searchForPool: '';
+      selectPools: '';
     };
   };
   root: {
