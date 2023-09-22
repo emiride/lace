@@ -3,8 +3,7 @@ import { Ellipsis, ErrorPane } from '@lace/common';
 import { DappInfo, DappInfoProps } from '../DappInfo';
 import styles from './DappTransaction.module.scss';
 import { TranslationsFor } from '@ui/utils/types';
-import { ReactComponent as WarningIcon } from '../../assets/icons/warning-icon.component.svg';
-import Icon from '@ant-design/icons';
+import { InsufficientFundsWarning } from '../InsufficientFundsWarning';
 
 type TransactionDetails = {
   fee: string;
@@ -42,12 +41,7 @@ export const DappTransaction = ({
 }: DappTransactionProps): React.ReactElement => (
   <div>
     <DappInfo {...dappInfo} className={styles.dappInfo} />
-    {hasInsufficientFunds && (
-      <div className={styles.warningAlert}>
-        <Icon component={WarningIcon} />
-        <p>{translations.insufficientFunds}</p>
-      </div>
-    )}
+    {hasInsufficientFunds && <InsufficientFundsWarning translations={translations.insufficientFunds} />}
     {errorMessage && <ErrorPane error={errorMessage} className={styles.error} />}
     <div data-testid="dapp-transaction-container" className={styles.details}>
       <div className={styles.header}>
