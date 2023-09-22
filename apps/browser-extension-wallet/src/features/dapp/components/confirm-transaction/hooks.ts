@@ -1,21 +1,14 @@
 import { AssetProvider } from '@cardano-sdk/core';
-import { RemoteApiPropertyType, exposeApi } from '@cardano-sdk/web-extension';
 import { useRedirection } from '@hooks';
 import { Wallet } from '@lace/cardano';
-import { UserPromptService } from '@lib/scripts/background/services';
-import { DappDataService } from '@lib/scripts/types';
 import { dAppRoutePaths } from '@routes';
 import { CardanoTxOut, WalletInfo } from '@src/types';
-import { DAPP_CHANNELS } from '@src/utils/constants';
 import { TokenInfo, getAssetsInformation } from '@src/utils/get-assets-information';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { of } from 'rxjs';
-import { runtime } from 'webextension-polyfill';
 import * as HardwareLedger from '@cardano-sdk/hardware-ledger';
-import { getTransactionAssetsId, getTxType } from './utils';
+import { allowSignTx, disallowSignTx, getTransactionAssetsId, getTxType } from './utils';
 import { AddressListType } from '@src/views/browser-view/features/activity';
-
-const DAPP_TOAST_DURATION = 50;
+import { GetSignTxData, SignTxData } from './types';
 
 export const useCreateAssetList = ({
   assets,
@@ -60,10 +53,6 @@ export const useCreateAssetList = ({
     [assets, assetsInfo]
   );
 };
-
-type GetSignTxData = DappDataService['getSignTxData'];
-type SignTxData = { dappInfo: Wallet.DappInfo; tx: Wallet.Cardano.Tx };
-
 export const useSignTxData = (getSignTxData: GetSignTxData): { signTxData?: SignTxData; errorMessage?: string } => {
   const [signTxData, setSignTxData] = useState<{ dappInfo: Wallet.DappInfo; tx: Wallet.Cardano.Tx }>();
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
@@ -82,56 +71,27 @@ export const useSignTxData = (getSignTxData: GetSignTxData): { signTxData?: Sign
   return { signTxData, errorMessage };
 };
 
-export const useCancelTx = (): ((close?: boolean) => void) =>
-  useCallback((close = false) => {
-    exposeApi<Pick<UserPromptService, 'allowSignTx'>>(
-      {
-        api$: of({
-          async allowSignTx(): Promise<boolean> {
-            return Promise.reject();
-          }
-        }),
-        baseChannel: DAPP_CHANNELS.userPrompt,
-        properties: { allowSignTx: RemoteApiPropertyType.MethodReturningPromise }
-      },
-      { logger: console, runtime }
-    );
-    close && setTimeout(() => window.close(), DAPP_TOAST_DURATION);
-  }, []);
+export const useDisallowSignTx = (): ((close?: boolean) => void) => useCallback(disallowSignTx, []);
 
-export const useSignWithHardwareWallet = (
-  cancelTransaction: (close?: boolean) => void
-): {
+export const useAllowSignTx = (): (() => void) => useCallback(allowSignTx, []);
+
+export const useSignWithHardwareWallet = (): {
   signWithHardwareWallet: () => Promise<void>;
   isConfirmingTx: boolean;
 } => {
-  const redirectToSignFailure = useRedirection(dAppRoutePaths.dappTxSignFailure);
+  const allow = useAllowSignTx();
+  const disallow = useDisallowSignTx();
+  const redirectToSignFailure = useRedirection<Record<string, never>>(dAppRoutePaths.dappTxSignFailure);
   const [isConfirmingTx, setIsConfirmingTx] = useState<boolean>();
   const signWithHardwareWallet = async () => {
     setIsConfirmingTx(true);
     try {
-      HardwareLedger.LedgerKeyAgent.establishDeviceConnection(Wallet.KeyManagement.CommunicationType.Web)
-        .then(() => {
-          exposeApi<Pick<UserPromptService, 'allowSignTx'>>(
-            {
-              api$: of({
-                async allowSignTx(): Promise<boolean> {
-                  return Promise.resolve(true);
-                }
-              }),
-              baseChannel: DAPP_CHANNELS.userPrompt,
-              properties: { allowSignTx: RemoteApiPropertyType.MethodReturningPromise }
-            },
-            { logger: console, runtime }
-          );
-        })
-        .catch((error) => {
-          throw error;
-        });
+      await HardwareLedger.LedgerKeyAgent.establishDeviceConnection(Wallet.KeyManagement.CommunicationType.Web);
+      allow();
     } catch (error) {
       console.error('error', error);
-      cancelTransaction(false);
-      redirectToSignFailure();
+      disallow(false);
+      redirectToSignFailure({});
     }
   };
 
