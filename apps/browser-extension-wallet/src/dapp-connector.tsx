@@ -8,6 +8,7 @@ import { CurrencyStoreProvider } from '@providers/currency';
 import { DatabaseProvider, AxiosClientProvider, AppSettingsProvider, CardanoWalletManagerProvider } from '@providers';
 import { HashRouter } from 'react-router-dom';
 import { ThemeProvider } from '@providers/ThemeProvider';
+import { UIThemeProvider } from '@providers/UIThemeProvider';
 import { BackgroundServiceAPIProvider } from '@providers/BackgroundServiceAPI';
 import { APP_MODE_POPUP } from './utils/constants';
 
@@ -21,7 +22,9 @@ const App = (): React.ReactElement => (
               <CurrencyStoreProvider>
                 <HashRouter>
                   <ThemeProvider>
-                    <DappConnectorView />
+                    <UIThemeProvider>
+                      <DappConnectorView />
+                    </UIThemeProvider>
                   </ThemeProvider>
                 </HashRouter>
               </CurrencyStoreProvider>
