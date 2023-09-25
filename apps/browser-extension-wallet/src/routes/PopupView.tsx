@@ -70,8 +70,14 @@ export const PopupView = (): React.ReactElement => {
   }
 
   // Wallet loaded
-  if (keyAgentData && walletInfo && inMemoryWallet && addressesDiscoveryCompleted) {
-    return <ExtensionRoutes />;
+  if (keyAgentData && walletInfo && inMemoryWallet) {
+    return (
+      <>
+        {/* FIXME: not working properly when switching networks after the first time */}
+        {!addressesDiscoveryCompleted && <MainLoader overlay />}
+        <ExtensionRoutes />
+      </>
+    );
   }
 
   return <MainLoader />;
