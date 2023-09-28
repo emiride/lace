@@ -123,8 +123,12 @@ type KeysStructure = {
     preferences: {
       selectedStakePools: '';
       addPoolButton: '';
-      stakeValue: '';
       nextButton: '';
+      poolDetails: {
+        savedRatio: '';
+        actualRatio: '';
+        actualStake: '';
+      };
     };
   };
   modals: {
