@@ -4,6 +4,7 @@ import localStorageInitializer from '../fixture/localStorageInitializer';
 import popupView from '../page/popupView';
 import { TestWalletName } from '../support/walletConfiguration';
 import networkManager from '../utils/networkManager';
+import { resetCollateralState } from '../utils/collateralUtils';
 
 const extendedViewWalletInitialization = async (walletName = TestWalletName.TestAutomationWallet): Promise<void> => {
   await extendedView.visit();
@@ -70,10 +71,11 @@ Before(
   async () => await extendedViewWalletInitialization(TestWalletName.WalletSendBundlesTransactionE2E)
 );
 
-Before(
-  { tags: '@Collateral-extended' },
-  async () => await extendedViewWalletInitialization(TestWalletName.WalletCollateral)
-);
+Before({ tags: '@Collateral-extended' }, async () => {
+  await extendedViewWalletInitialization(TestWalletName.WalletCollateral);
+  await resetCollateralState();
+  await extendedView.visit();
+});
 
 Before({ tags: '@Collateral-popup' }, async () => await popupViewWalletInitialization(TestWalletName.WalletCollateral));
 

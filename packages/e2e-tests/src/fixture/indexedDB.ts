@@ -17,6 +17,10 @@ class IndexedDB {
     }, objectStoreName);
   }
 
+  async listDatabases() {
+    return (await driver.execute('return await indexedDB.databases();')) as Array<{ name: string; version: number }>;
+  }
+
   async clearAddressBook() {
     Logger.log('Clearing address book store in OneWalletDB');
     await this.clearObjectStore('addressBook');
@@ -77,6 +81,21 @@ class IndexedDB {
       nftFolder.getAssets(),
       network
     );
+  }
+
+  async deleteDatabase(databaseName: string) {
+    Logger.log(`Deleting database: ${databaseName}`);
+    await driver.execute((databaseName) => {
+      const DBDeleteRequest = window.indexedDB.deleteDatabase(databaseName);
+
+      DBDeleteRequest.addEventListener('error', () => {
+        console.error('Error deleting database.');
+      });
+
+      DBDeleteRequest.onsuccess = () => {
+        Logger.log('Database deleted successfully');
+      };
+    }, databaseName);
   }
 }
 
