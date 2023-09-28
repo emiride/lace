@@ -8,6 +8,11 @@ export const barContainer = style([
     right: '$24',
   }),
   {
+    '@media': {
+      'screen and (max-width: 668px)': {
+        minWidth: '576px',
+      },
+    },
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
