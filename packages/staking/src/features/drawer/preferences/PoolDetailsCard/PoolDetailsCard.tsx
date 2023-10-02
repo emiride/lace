@@ -9,7 +9,7 @@ import {
   PERCENTAGE_SCALE_MAX,
   TMP_HOTFIX_PORTFOLIO_STORE_NOT_PERSISTED,
 } from '../../../store/delegationPortfolioStore/constants';
-import { DelegationPercentageSlider } from '../DelegationPercentageSlider';
+import { DelegationRatioSlider } from '../DelegationRatioSlider';
 import * as styles from './PoolDetailsCard.css';
 import TrashIcon from './trash.svg';
 
@@ -84,7 +84,7 @@ export const PoolDetailsCard = ({
               <Flex pl="$32" pr="$32" flexDirection="column" className={styles.valueBox}>
                 <Box>
                   <Text.Body.Large weight="$medium" className={styles.valueLabel}>
-                    {t('drawer.preferences.poolDetails.savedPercentage')}
+                    {t('drawer.preferences.poolDetails.savedRatio')}
                   </Text.Body.Large>
                   {/* TODO tooltips & styles */}
                   <InfoIcon className={styles.valueInfoIcon} />
@@ -96,7 +96,7 @@ export const PoolDetailsCard = ({
               <Flex pl="$32" pr="$32" flexDirection="column" className={styles.valueBox}>
                 <Box>
                   <Text.Body.Large weight="$medium" className={styles.valueLabel}>
-                    {t('drawer.preferences.poolDetails.actualPercentage')}
+                    {t('drawer.preferences.poolDetails.actualRatio')}
                   </Text.Body.Large>
                   {/* TODO tooltips & styles */}
                   <InfoIcon className={styles.valueInfoIcon} />
@@ -147,7 +147,7 @@ export const PoolDetailsCard = ({
                 <Text.Body.Large>%</Text.Body.Large>
               </Flex>
             </Flex>
-            <DelegationPercentageSlider
+            <DelegationRatioSlider
               step={1}
               max={PERCENTAGE_SCALE_MAX}
               min={percentage === 0 ? 0 : 1}
