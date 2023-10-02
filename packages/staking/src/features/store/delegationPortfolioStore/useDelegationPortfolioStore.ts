@@ -31,7 +31,6 @@ export const useDelegationPortfolioStore = create(
     ...defaultState,
     mutators: {
       executeCommand: (command) => {
-        console.log('DEBUG COMMAND', command);
         let numberOfRecursiveCalls = 0;
         const callsConsideredAnInfiniteLoop = 10;
         let paramsStack: Command[] = [command];
