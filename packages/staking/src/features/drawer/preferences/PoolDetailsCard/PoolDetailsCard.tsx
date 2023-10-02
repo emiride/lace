@@ -58,7 +58,13 @@ export const PoolDetailsCard = ({
 
   return (
     <Card.Outlined className={styles.root}>
-      <Flex justifyContent="space-between" alignItems="center" my="$24" mx="$32">
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        my="$24"
+        mx="$32"
+        style={TMP_HOTFIX_PORTFOLIO_STORE_NOT_PERSISTED ? { marginBottom: 0 } : {}}
+      >
         <Flex alignItems="center" gap="$24">
           <Box className={styles.poolIndicator} style={{ backgroundColor: color }} />
           <Text.SubHeading>{name}</Text.SubHeading>
@@ -109,7 +115,14 @@ export const PoolDetailsCard = ({
               </Flex>
             </Flex>
           )}
-          <Flex gap="$28" p="$32" pt="$20" flexDirection="column" alignItems="center">
+          <Flex
+            gap="$28"
+            p="$32"
+            pt="$20"
+            flexDirection="column"
+            alignItems="center"
+            style={TMP_HOTFIX_PORTFOLIO_STORE_NOT_PERSISTED ? { gap: 16, paddingTop: 0 } : {}}
+          >
             <Flex justifyContent="space-between" alignItems="center" w="$fill">
               {!TMP_HOTFIX_PORTFOLIO_STORE_NOT_PERSISTED ? (
                 <Text.Body.Large>Edit saved ratio</Text.Body.Large>
@@ -118,7 +131,15 @@ export const PoolDetailsCard = ({
               )}
               <Flex alignItems="center" gap="$12">
                 <Text.Body.Large>Ratio</Text.Body.Large>
-                <input type="number" max={PERCENTAGE_SCALE_MAX} min={localValue === 0 ? 0 : 1} value={localValue} />
+                <Box className={styles.inputContainer}>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    max={PERCENTAGE_SCALE_MAX}
+                    min={localValue === 0 ? 0 : 1}
+                    value={localValue}
+                  />
+                </Box>
                 <Text.Body.Large>%</Text.Body.Large>
               </Flex>
             </Flex>
