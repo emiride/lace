@@ -1,19 +1,18 @@
 import { Box, Card, ControlButton, Flex, PieChartColor, Text } from '@lace/ui';
 import ChevronDownIcon from '@lace/ui/dist/assets/icons/chevron-down.component.svg';
 import ChevronUpIcon from '@lace/ui/dist/assets/icons/chevron-up.component.svg';
-import denounce from 'lodash/debounce';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InfoIcon from '../../../../assets/icons/info-icon.svg';
 import { Tooltip } from '../../../overview/StakingInfoCard/StatsTooltip';
-// import { PERCENTAGE_SCALE_MAX } from '../../store';
-import { TMP_HOTFIX_PORTFOLIO_STORE_NOT_PERSISTED } from '../../../store/delegationPortfolioStore/constants';
+import {
+  PERCENTAGE_SCALE_MAX,
+  TMP_HOTFIX_PORTFOLIO_STORE_NOT_PERSISTED,
+} from '../../../store/delegationPortfolioStore/constants';
 import { DelegationRatioSlider } from '../DelegationRatioSlider';
 import * as styles from './PoolDetailsCard.css';
 import TrashIcon from './trash.svg';
 
-// TODO
-const PERCENTAGE_SCALE_MAX = 100;
 type PercentagesChangeHandler = (value: number) => void;
 
 interface PoolDetailsCardProps {
@@ -48,14 +47,12 @@ export const PoolDetailsCard = ({
   const { t } = useTranslation();
   const [localValue, setLocalValue] = useState(targetRatio);
 
-  // eslint-disable-next-line no-magic-numbers,react-hooks/exhaustive-deps
-  const onSliderChange = useCallback<PercentagesChangeHandler>(denounce(onPercentageChange, 300), [onPercentageChange]);
   useEffect(() => {
     if (!effectInitialized.current) {
       effectInitialized.current = true;
       return;
     }
-    onSliderChange(localValue);
+    onPercentageChange(localValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localValue]);
 
